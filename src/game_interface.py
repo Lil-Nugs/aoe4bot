@@ -27,18 +27,62 @@ class GameState:
 class GameInterface:
     """Interface for capturing game state and sending inputs to AoE4."""
 
-    def __init__(self, window_title: str = "Age of Empires IV"):
+    def __init__(self, window_title: str = "Age of Empires IV", filter_aoe4_only: bool = True):
         self.window_title = window_title
+        self.filter_aoe4_only = filter_aoe4_only
         self.sct = mss.mss()
+        self.game_window = None
 
         # Disable pyautogui safety features for faster execution
         pyautogui.PAUSE = 0.01
         pyautogui.FAILSAFE = True  # Move mouse to corner to stop
 
         self.screen_width, self.screen_height = pyautogui.size()
-        self.monitor = {"top": 0, "left": 0,
-                       "width": self.screen_width,
-                       "height": self.screen_height}
+
+        # Try to find and focus on the AoE4 window
+        if self.filter_aoe4_only:
+            self._find_game_window()
+            if self.game_window:
+                self.monitor = {
+                    "top": self.game_window['top'],
+                    "left": self.game_window['left'],
+                    "width": self.game_window['width'],
+                    "height": self.game_window['height']
+                }
+                print(f"Found AoE4 window at ({self.game_window['left']}, {self.game_window['top']}) "
+                      f"with size {self.game_window['width']}x{self.game_window['height']}")
+            else:
+                print("Warning: AoE4 window not found, using full screen capture")
+                self.monitor = {"top": 0, "left": 0,
+                               "width": self.screen_width,
+                               "height": self.screen_height}
+        else:
+            self.monitor = {"top": 0, "left": 0,
+                           "width": self.screen_width,
+                           "height": self.screen_height}
+
+    def _find_game_window(self):
+        """Find the Age of Empires IV window."""
+        try:
+            import pygetwindow as gw
+            windows = gw.getWindowsWithTitle(self.window_title)
+            if windows:
+                win = windows[0]
+                # Store window position and size
+                self.game_window = {
+                    'left': win.left,
+                    'top': win.top,
+                    'width': win.width,
+                    'height': win.height
+                }
+                return True
+        except ImportError:
+            print("Warning: pygetwindow not installed. Install with: pip install pygetwindow")
+        except Exception as e:
+            print(f"Error finding game window: {e}")
+
+        self.game_window = None
+        return False
 
     def capture_screen(self) -> np.ndarray:
         """Capture the game screen."""
@@ -135,8 +179,8 @@ class GameInterface:
         self.drag(x1, y1, x2, y2)
 
     def select_idle_villager(self):
-        """Select idle villager (using hotkey)."""
-        self.press_key('.')  # Default idle villager hotkey
+        """Select idle economy unit (villager, fishing ship, trader)."""
+        self.press_key('.')  # Default idle economy unit hotkey
 
     def set_rally_point(self, x: int, y: int):
         """Set rally point for selected building."""

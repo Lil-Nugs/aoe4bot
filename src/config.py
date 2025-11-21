@@ -14,9 +14,28 @@ class GameConfig:
     screen_height: int = 2160  # 4K resolution
     game_speed: float = 1.0
 
-    # Game UI positions (will need calibration for 4K)
-    tc_position: Tuple[int, int] = (1920, 1080)  # Town center typical position (center of screen)
-    minimap_region: Tuple[int, int, int, int] = (0, 0, 400, 400)  # x, y, w, h (scaled for 4K)
+    # Game UI positions (calibrated using calibrate_ui.py)
+    minimap_region: Tuple[int, int, int, int] = (0, 0, 400, 400)  # x, y, w, h
+
+    # Resource bar positions (for OCR - read values from screen)
+    resources_food_pos: Tuple[int, int] = (0, 0)  # x, y of food resource number
+    resources_wood_pos: Tuple[int, int] = (0, 0)  # x, y of wood resource number
+    resources_gold_pos: Tuple[int, int] = (0, 0)  # x, y of gold resource number
+    resources_stone_pos: Tuple[int, int] = (0, 0)  # x, y of stone resource number
+
+    # Other UI positions (for OCR - read values from screen)
+    population_pos: Tuple[int, int] = (0, 0)  # x, y of population counter
+    game_time_pos: Tuple[int, int] = (0, 0)  # x, y of game time display
+    queue_indicator_pos: Tuple[int, int] = (0, 0)  # x, y of queue indicator (to check production)
+
+    # OCR region sizes (width, height around the position)
+    ocr_region_size: Tuple[int, int] = (100, 40)  # Default size for OCR regions
+
+    # Game hotkeys (for actions - faster than clicking!)
+    hotkey_select_tc: str = 'h'  # Select town center
+    hotkey_idle_economy: str = '.'  # Select idle economy unit (villager, fishing ship, trader)
+    hotkey_queue_villager: str = 'q'  # Queue villager (when TC selected)
+    hotkey_attack_move: str = 'a'  # Attack move
 
     # Action delays (seconds)
     click_delay: float = 0.05
