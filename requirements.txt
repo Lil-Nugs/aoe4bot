@@ -1,0 +1,29 @@
+# Core ML/RL dependencies
+torch>=2.0.0
+stable-baselines3>=2.0.0
+gymnasium>=0.28.0
+tensorboard>=2.13.0
+
+# Computer vision for screen capture
+opencv-python>=4.8.0
+Pillow>=10.0.0
+mss>=9.0.0
+
+# Input simulation
+pyautogui>=0.9.54
+pydirectinput>=1.0.4
+
+# OCR for reading game state (optional but helpful)
+pytesseract>=0.3.10
+easyocr>=1.7.0
+
+# Configuration and utilities
+pyyaml>=6.0
+numpy>=1.24.0
+matplotlib>=3.7.0
+tqdm>=4.65.0
+
+# Development tools
+pytest>=7.4.0
+black>=23.7.0
+flake8>=6.1.0

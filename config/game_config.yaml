@@ -1,0 +1,44 @@
+# AoE4 Bot Configuration
+
+game:
+  window_title: "Age of Empires IV"
+  screen_width: 3840  # 4K resolution
+  screen_height: 2160
+  game_speed: 1.0
+  tc_position: [1920, 1080]  # Center of 4K screen
+  minimap_region: [0, 0, 400, 400]  # Scaled for 4K
+  click_delay: 0.05
+  command_delay: 0.1
+
+training:
+  # PPO Hyperparameters
+  learning_rate: 0.0003
+  n_steps: 2048
+  batch_size: 64
+  n_epochs: 10
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.2
+  ent_coef: 0.01
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+
+  # Training settings
+  total_timesteps: 10000000
+  save_freq: 50000
+  eval_freq: 10000
+  eval_episodes: 5
+
+  # Environment settings
+  n_envs: 1
+  frame_skip: 4
+  observation_size: [84, 84]
+
+rewards:
+  villager_queued: 10.0
+  villager_created: 50.0
+  sheep_collected: 100.0
+  map_explored: 1.0
+  scout_death: -100.0
+  tc_danger_penalty: -10.0
+  idle_villager_penalty: -5.0

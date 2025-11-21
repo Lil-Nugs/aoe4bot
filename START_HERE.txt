@@ -1,0 +1,77 @@
+================================================================================
+                    AoE4 Bot - Where to Start
+================================================================================
+
+IMPORTANT: You're currently in WSL, but this project needs to run on Windows
+to interact with Age of Empires IV.
+
+NEXT STEPS:
+================================================================================
+
+1. Access this project from Windows File Explorer:
+   
+   Open File Explorer and go to:
+   \\wsl$\Ubuntu\home\mattc\aoe4bot
+
+2. Copy the folder to Windows (recommended):
+   
+   Suggested location:
+   C:\Users\YourName\Projects\aoe4bot
+
+3. Install Python on Windows:
+   
+   Download from: https://www.python.org/downloads/
+   CHECK "Add Python to PATH" during installation!
+
+4. Open PowerShell in the project folder:
+   
+   Right-click in the folder → "Open PowerShell window here"
+
+5. Run the setup script:
+   
+   .\setup_windows.bat
+
+6. Test screen capture:
+   
+   .\run_test.bat
+
+================================================================================
+                         Documentation Guide
+================================================================================
+
+QUICKEST START:
+→ QUICK_START_WINDOWS.md - Fast setup guide (read this first!)
+
+COMPLETE GUIDE:
+→ WINDOWS_SETUP.md - Detailed setup instructions with troubleshooting
+
+IF YOU'RE NEW TO THIS:
+→ TRANSITION_TO_WINDOWS.md - Explains why Windows is needed
+
+PROJECT INFO:
+→ README.md - Project overview and goals
+→ ROADMAP.md - Development plan and milestones
+
+================================================================================
+                              Summary
+================================================================================
+
+✓ Project structure created
+✓ Python code written (game interface, AI environment, training)
+✓ Configuration files set up for 4K monitor
+✓ Windows setup scripts created
+✓ Documentation complete
+
+✗ Needs to run on Windows (currently in WSL)
+✗ Screen capture not yet tested
+✗ Training not yet started
+
+WHAT YOU NEED:
+1. Python installed on Windows
+2. Run setup_windows.bat
+3. Test with run_test.bat
+4. Start training with train.bat
+
+Questions? Check the documentation files above!
+
+================================================================================
