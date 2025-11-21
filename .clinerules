@@ -1,0 +1,11 @@
+# Project Rules for AoE4 Bot
+
+## Code Style
+- Never use emojis in code output or print statements
+- Use plain text markers like [OK], [ERROR], [INFO] instead
+- Keep output Windows console-compatible (avoid Unicode characters that may not render)
+
+## General Guidelines
+- Follow existing code structure and patterns
+- Maintain compatibility with Windows environment
+- Test all changes before committing

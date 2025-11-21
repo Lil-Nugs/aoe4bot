@@ -13,23 +13,21 @@ class GameConfig:
     screen_width: int = 3840  # 4K resolution
     screen_height: int = 2160  # 4K resolution
     game_speed: float = 1.0
+    tc_position: Tuple[int, int] = (1920, 1080)  # Town center position
 
-    # Game UI positions (calibrated using calibrate_ui.py)
+    # Game UI regions (calibrated using calibrate_ui.py) - all as x, y, w, h
     minimap_region: Tuple[int, int, int, int] = (0, 0, 400, 400)  # x, y, w, h
 
-    # Resource bar positions (for OCR - read values from screen)
-    resources_food_pos: Tuple[int, int] = (0, 0)  # x, y of food resource number
-    resources_wood_pos: Tuple[int, int] = (0, 0)  # x, y of wood resource number
-    resources_gold_pos: Tuple[int, int] = (0, 0)  # x, y of gold resource number
-    resources_stone_pos: Tuple[int, int] = (0, 0)  # x, y of stone resource number
+    # Resource bar regions (for OCR - read values from screen)
+    resources_food_region: Tuple[int, int, int, int] = (0, 0, 100, 40)  # x, y, w, h
+    resources_wood_region: Tuple[int, int, int, int] = (0, 0, 100, 40)  # x, y, w, h
+    resources_gold_region: Tuple[int, int, int, int] = (0, 0, 100, 40)  # x, y, w, h
+    resources_stone_region: Tuple[int, int, int, int] = (0, 0, 100, 40)  # x, y, w, h
 
-    # Other UI positions (for OCR - read values from screen)
-    population_pos: Tuple[int, int] = (0, 0)  # x, y of population counter
-    game_time_pos: Tuple[int, int] = (0, 0)  # x, y of game time display
-    queue_indicator_pos: Tuple[int, int] = (0, 0)  # x, y of queue indicator (to check production)
-
-    # OCR region sizes (width, height around the position)
-    ocr_region_size: Tuple[int, int] = (100, 40)  # Default size for OCR regions
+    # Other UI regions (for OCR - read values from screen)
+    population_region: Tuple[int, int, int, int] = (0, 0, 100, 40)  # x, y, w, h
+    game_time_region: Tuple[int, int, int, int] = (0, 0, 100, 40)  # x, y, w, h
+    queue_indicator_region: Tuple[int, int, int, int] = (0, 0, 100, 40)  # x, y, w, h
 
     # Game hotkeys (for actions - faster than clicking!)
     hotkey_select_tc: str = 'h'  # Select town center
@@ -112,21 +110,41 @@ class Config:
         with open(self.config_path, 'r') as f:
             data = yaml.safe_load(f)
 
+        def convert_lists_to_tuples(obj):
+            """Recursively convert lists to tuples for proper type matching."""
+            if isinstance(obj, dict):
+                return {k: convert_lists_to_tuples(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return tuple(convert_lists_to_tuples(item) for item in obj)
+            else:
+                return obj
+
         if 'game' in data:
-            self.game = GameConfig(**data['game'])
+            self.game = GameConfig(**convert_lists_to_tuples(data['game']))
         if 'training' in data:
-            self.training = TrainingConfig(**data['training'])
+            self.training = TrainingConfig(**convert_lists_to_tuples(data['training']))
         if 'rewards' in data:
-            self.rewards = RewardConfig(**data['rewards'])
+            self.rewards = RewardConfig(**convert_lists_to_tuples(data['rewards']))
 
     def save(self):
         """Save configuration to YAML file."""
         self.config_path.parent.mkdir(exist_ok=True)
 
+        def convert_tuples_to_lists(obj):
+            """Recursively convert tuples to lists for YAML serialization."""
+            if isinstance(obj, dict):
+                return {k: convert_tuples_to_lists(v) for k, v in obj.items()}
+            elif isinstance(obj, tuple):
+                return list(obj)
+            elif isinstance(obj, list):
+                return [convert_tuples_to_lists(item) for item in obj]
+            else:
+                return obj
+
         data = {
-            'game': asdict(self.game),
-            'training': asdict(self.training),
-            'rewards': asdict(self.rewards)
+            'game': convert_tuples_to_lists(asdict(self.game)),
+            'training': convert_tuples_to_lists(asdict(self.training)),
+            'rewards': convert_tuples_to_lists(asdict(self.rewards))
         }
 
         with open(self.config_path, 'w') as f:

@@ -66,16 +66,30 @@ class GameInterface:
         try:
             import pygetwindow as gw
             windows = gw.getWindowsWithTitle(self.window_title)
+
             if windows:
-                win = windows[0]
-                # Store window position and size
-                self.game_window = {
-                    'left': win.left,
-                    'top': win.top,
-                    'width': win.width,
-                    'height': win.height
-                }
-                return True
+                # Filter out small windows (likely not the game window)
+                game_windows = [w for w in windows if w.width > 800 and w.height > 600]
+
+                if game_windows:
+                    # If multiple windows, try to find the one that's visible and largest
+                    win = max(game_windows, key=lambda w: w.width * w.height)
+
+                    print(f"Found window: '{win.title}' at ({win.left}, {win.top}) size {win.width}x{win.height}")
+
+                    # Store window position and size
+                    self.game_window = {
+                        'left': win.left,
+                        'top': win.top,
+                        'width': win.width,
+                        'height': win.height
+                    }
+                    return True
+                else:
+                    print(f"Found windows with title '{self.window_title}' but they are too small")
+            else:
+                print(f"No windows found with title '{self.window_title}'")
+
         except ImportError:
             print("Warning: pygetwindow not installed. Install with: pip install pygetwindow")
         except Exception as e:
@@ -193,16 +207,39 @@ class GameInterface:
 
     def focus_game_window(self):
         """Bring game window to focus."""
-        # This is platform-specific and may need adjustment
         try:
             import pygetwindow as gw
             windows = gw.getWindowsWithTitle(self.window_title)
+
             if windows:
-                windows[0].activate()
-                time.sleep(0.5)
-                return True
+                # Filter for actual game window (large size)
+                game_windows = [w for w in windows if w.width > 800 and w.height > 600]
+
+                if game_windows:
+                    win = max(game_windows, key=lambda w: w.width * w.height)
+
+                    # Try to activate/focus the window
+                    try:
+                        win.activate()
+                        time.sleep(0.5)
+                        return True
+                    except Exception as e:
+                        # If activate fails, try minimize/restore
+                        try:
+                            if not win.isMinimized:
+                                # For borderless fullscreen, just try to click on it
+                                pyautogui.click(win.left + 100, win.top + 100)
+                                time.sleep(0.3)
+                                return True
+                        except Exception:
+                            pass
+                        print(f"Warning: Could not activate window: {e}")
+                        return False
         except ImportError:
             print("pygetwindow not installed, skipping window focus")
+        except Exception as e:
+            print(f"Error focusing window: {e}")
+
         return False
 
 

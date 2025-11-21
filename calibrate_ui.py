@@ -10,8 +10,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 import cv2
 import numpy as np
-from src.game_interface import GameInterface
-from src.config import Config
+from game_interface import GameInterface
+from config import Config
 import json
 
 class UICalibrator:
@@ -27,7 +27,7 @@ class UICalibrator:
         self.click_count = 0
         self.temp_points = []
 
-        # UI elements to calibrate
+        # UI elements to calibrate (all use region-based selection)
         self.calibration_steps = [
             {
                 'name': 'minimap',
@@ -37,45 +37,45 @@ class UICalibrator:
             },
             {
                 'name': 'resources_food',
-                'instruction': 'Click on FOOD resource number',
-                'clicks_needed': 1,
-                'type': 'point'
+                'instruction': 'Click TOP-LEFT corner of FOOD resource number, then BOTTOM-RIGHT corner',
+                'clicks_needed': 2,
+                'type': 'region'
             },
             {
                 'name': 'resources_wood',
-                'instruction': 'Click on WOOD resource number',
-                'clicks_needed': 1,
-                'type': 'point'
+                'instruction': 'Click TOP-LEFT corner of WOOD resource number, then BOTTOM-RIGHT corner',
+                'clicks_needed': 2,
+                'type': 'region'
             },
             {
                 'name': 'resources_gold',
-                'instruction': 'Click on GOLD resource number',
-                'clicks_needed': 1,
-                'type': 'point'
+                'instruction': 'Click TOP-LEFT corner of GOLD resource number, then BOTTOM-RIGHT corner',
+                'clicks_needed': 2,
+                'type': 'region'
             },
             {
                 'name': 'resources_stone',
-                'instruction': 'Click on STONE resource number',
-                'clicks_needed': 1,
-                'type': 'point'
+                'instruction': 'Click TOP-LEFT corner of STONE resource number, then BOTTOM-RIGHT corner',
+                'clicks_needed': 2,
+                'type': 'region'
             },
             {
                 'name': 'population',
-                'instruction': 'Click on POPULATION counter (e.g., "10/200")',
-                'clicks_needed': 1,
-                'type': 'point'
+                'instruction': 'Click TOP-LEFT corner of POPULATION counter (e.g., "10/200"), then BOTTOM-RIGHT corner',
+                'clicks_needed': 2,
+                'type': 'region'
             },
             {
                 'name': 'game_time',
-                'instruction': 'Click on GAME TIME display (e.g., "5:30")',
-                'clicks_needed': 1,
-                'type': 'point'
+                'instruction': 'Click TOP-LEFT corner of GAME TIME display (e.g., "5:30"), then BOTTOM-RIGHT corner',
+                'clicks_needed': 2,
+                'type': 'region'
             },
             {
                 'name': 'queue_indicator',
-                'instruction': 'Click on QUEUE indicator area (where unit production icons show)',
-                'clicks_needed': 1,
-                'type': 'point'
+                'instruction': 'Click TOP-LEFT corner of QUEUE indicator area, then BOTTOM-RIGHT corner',
+                'clicks_needed': 2,
+                'type': 'region'
             }
         ]
 
@@ -149,9 +149,22 @@ class UICalibrator:
         print("=" * 70)
         print("AoE4 Bot - UI Calibration Tool")
         print("=" * 70)
-        print("\nMake sure Age of Empires IV is running and visible!")
+        print("\nMake sure Age of Empires IV is running!")
         print("Press ENTER when ready to capture screenshot...")
+        print("(The game window will be brought to front automatically)")
         input()
+
+        # Focus the game window first
+        print("\nBringing AoE4 window to front...")
+        if self.interface.focus_game_window():
+            print("Game window focused. Capturing in 2 seconds...")
+            import time
+            time.sleep(2)  # Give time for window to come to front
+        else:
+            print("Warning: Could not focus game window. Make sure it's visible!")
+            print("Capturing in 3 seconds...")
+            import time
+            time.sleep(3)
 
         # Capture screenshot
         print("\nCapturing game screenshot...")
@@ -163,7 +176,7 @@ class UICalibrator:
         self.screenshot = cv2.cvtColor(self.screenshot, cv2.COLOR_RGB2BGR)
         self.display_img = self.screenshot.copy()
 
-        print(f"✓ Screenshot captured: {self.screenshot.shape}")
+        print(f"[OK] Screenshot captured: {self.screenshot.shape}")
 
         # Setup window
         cv2.namedWindow('UI Calibration', cv2.WINDOW_NORMAL)
@@ -250,7 +263,7 @@ class UICalibrator:
         with open(calibration_file, 'w') as f:
             json.dump(self.ui_positions, f, indent=2)
 
-        print(f"\n✓ Calibration saved to: {calibration_file}")
+        print(f"\n[OK] Calibration saved to: {calibration_file}")
         print("\nYou can now use these positions in your bot configuration!")
 
         # Also update the config file if needed
@@ -267,39 +280,39 @@ class UICalibrator:
             mm = self.ui_positions['minimap']
             self.config.game.minimap_region = (mm['x'], mm['y'], mm['width'], mm['height'])
 
-        # Update resource positions
+        # Update resource regions (now all are regions with x, y, width, height)
         if 'resources_food' in self.ui_positions:
             pos = self.ui_positions['resources_food']
-            self.config.game.resources_food_pos = (pos['x'], pos['y'])
+            self.config.game.resources_food_region = (pos['x'], pos['y'], pos['width'], pos['height'])
 
         if 'resources_wood' in self.ui_positions:
             pos = self.ui_positions['resources_wood']
-            self.config.game.resources_wood_pos = (pos['x'], pos['y'])
+            self.config.game.resources_wood_region = (pos['x'], pos['y'], pos['width'], pos['height'])
 
         if 'resources_gold' in self.ui_positions:
             pos = self.ui_positions['resources_gold']
-            self.config.game.resources_gold_pos = (pos['x'], pos['y'])
+            self.config.game.resources_gold_region = (pos['x'], pos['y'], pos['width'], pos['height'])
 
         if 'resources_stone' in self.ui_positions:
             pos = self.ui_positions['resources_stone']
-            self.config.game.resources_stone_pos = (pos['x'], pos['y'])
+            self.config.game.resources_stone_region = (pos['x'], pos['y'], pos['width'], pos['height'])
 
-        # Update other UI positions
+        # Update other UI regions
         if 'population' in self.ui_positions:
             pos = self.ui_positions['population']
-            self.config.game.population_pos = (pos['x'], pos['y'])
+            self.config.game.population_region = (pos['x'], pos['y'], pos['width'], pos['height'])
 
         if 'game_time' in self.ui_positions:
             pos = self.ui_positions['game_time']
-            self.config.game.game_time_pos = (pos['x'], pos['y'])
+            self.config.game.game_time_region = (pos['x'], pos['y'], pos['width'], pos['height'])
 
         if 'queue_indicator' in self.ui_positions:
             pos = self.ui_positions['queue_indicator']
-            self.config.game.queue_indicator_pos = (pos['x'], pos['y'])
+            self.config.game.queue_indicator_region = (pos['x'], pos['y'], pos['width'], pos['height'])
 
         # Save config
         self.config.save()
-        print(f"✓ Config updated and saved to: {self.config.config_path}")
+        print(f"[OK] Config updated and saved to: {self.config.config_path}")
 
 
 def main():

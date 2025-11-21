@@ -1,44 +1,82 @@
-# AoE4 Bot Configuration
-
 game:
-  window_title: "Age of Empires IV"
-  screen_width: 3840  # 4K resolution
-  screen_height: 2160
-  game_speed: 1.0
-  tc_position: [1920, 1080]  # Center of 4K screen
-  minimap_region: [0, 0, 400, 400]  # Scaled for 4K
   click_delay: 0.05
   command_delay: 0.1
-
-training:
-  # PPO Hyperparameters
-  learning_rate: 0.0003
-  n_steps: 2048
-  batch_size: 64
-  n_epochs: 10
-  gamma: 0.99
-  gae_lambda: 0.95
-  clip_range: 0.2
-  ent_coef: 0.01
-  vf_coef: 0.5
-  max_grad_norm: 0.5
-
-  # Training settings
-  total_timesteps: 10000000
-  save_freq: 50000
-  eval_freq: 10000
-  eval_episodes: 5
-
-  # Environment settings
-  n_envs: 1
-  frame_skip: 4
-  observation_size: [84, 84]
-
+  game_speed: 1.0
+  game_time_region:
+  - 1870
+  - 198
+  - 100
+  - 54
+  hotkey_attack_move: a
+  hotkey_idle_economy: .
+  hotkey_queue_villager: q
+  hotkey_select_tc: h
+  minimap_region:
+  - 3200
+  - 1504
+  - 616
+  - 630
+  population_region:
+  - 10
+  - 1696
+  - 158
+  - 76
+  queue_indicator_region:
+  - 18
+  - 1462
+  - 380
+  - 78
+  resources_food_region:
+  - 16
+  - 1820
+  - 148
+  - 56
+  resources_gold_region:
+  - 14
+  - 1980
+  - 144
+  - 54
+  resources_stone_region:
+  - 14
+  - 2062
+  - 140
+  - 48
+  resources_wood_region:
+  - 18
+  - 1898
+  - 146
+  - 56
+  screen_height: 2160
+  screen_width: 3840
+  tc_position:
+  - 1920
+  - 1080
+  window_title: Age of Empires IV
 rewards:
-  villager_queued: 10.0
-  villager_created: 50.0
-  sheep_collected: 100.0
+  idle_villager_penalty: -5.0
   map_explored: 1.0
   scout_death: -100.0
+  sheep_collected: 100.0
   tc_danger_penalty: -10.0
-  idle_villager_penalty: -5.0
+  villager_created: 50.0
+  villager_queued: 10.0
+training:
+  batch_size: 64
+  clip_range: 0.2
+  ent_coef: 0.01
+  eval_episodes: 5
+  eval_freq: 10000
+  frame_skip: 4
+  gae_lambda: 0.95
+  gamma: 0.99
+  learning_rate: 0.0003
+  max_grad_norm: 0.5
+  n_envs: 1
+  n_epochs: 10
+  n_steps: 2048
+  observation_size:
+  - 84
+  - 84
+  save_freq: 50000
+  total_timesteps: 10000000
+  vf_coef: 0.5
